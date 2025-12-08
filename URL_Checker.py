@@ -21,29 +21,76 @@ class URL:
         self.status = requests.get(urls).status_code
 
     
-    def getStatusCode(self):
+    def getStatus(self):
         #Make into switch statment return not just number but reason like OK, changing protocols, etc.
-        return self.status
+        if(self.status == 200):
+
+            return "(200 O.K) Link is working"
+        
+        else:
+
+            match self.status:
+
+                case 404:
+
+                    return ("(404 Not Found) Link is broken")
+                
+                case 400:
+
+                    return ("(400 Bad Request) Link is broken or User Error")
+                
+                case 403:
+
+                    return ("(403 Forbidden) Link is broken")
+                
+                case 401:
+
+                    return ("(401 Unauthorized) Link is broken")
+                
+                case _:
+                    return "Link is broken"
     
+Selector = input("For reading urls from a file enter 1,For enter urls manualy press 2:\n")
 
+validInput = False
 
-Done = False
+while not validInput:
 
-list_o_URL = []
+    if(Selector == '1'):
 
-
-while not Done:
-
-    url=input("Please enter your urls, If you are finished type 'done' ")
-
-    if(url == 'done'):
-
-        Done = True
+        validInput = True
+       
+        print("File handling goes here")
     
+    elif(Selector == '2'):
+
+        validInput = True
+
+        Done = False
+
+        list_o_URL = []
+
+
+        while not Done:
+
+            url=input("Please enter your urls, If you are finished type 'done' ")
+
+            if(url == 'done'):
+
+                Done = True
+    
+            else:
+
+                list_o_URL.append(URL(url))
+
+            
+        for url in list_o_URL:
+
+            print(f"URL: {url.urls} Status code: {url.getStatus()}")
+
     else:
 
-        list_o_URL.append(URL(url))
+        Selector = input("Invalid Selection: For reading urls from a file enter 1,For enter urls manualy press 2:\n")
 
-for url in list_o_URL:
 
-    print(f"URL: {url.urls} Status code: {url.getStatusCode()}")
+
