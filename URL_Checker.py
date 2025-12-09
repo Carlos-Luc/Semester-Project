@@ -1,12 +1,9 @@
 '''
-Docstring for Semester Project.URL_Checker
-
-To-Do:
-
-File reader
-status code meaning
-use status code to indicate broken links?
-maybe use get and if it throws an error tell user its not a correct link?
+Name: Carlos Lucero
+Date:12/08/25
+Description:
+This program takes either a file or user input of urls. Then using requests and status codes outputs to console
+if a link is broken or not.
 '''
 
 
@@ -14,22 +11,41 @@ import requests
 
 class URL:
 
-    def __init__(self,urls):
+    def __init__(self,url):
 
-        self.urls = urls
-
-        self.status = requests.get(urls).status_code
+        response = requests.get(url, timeout=10, allow_redirects=True)
+        #Holds url that was entered
+        self.urls = url
+        #Holds status code
+        self.status = response.status_code
+        #If redirect occurs then new url will be here
+        self.finalUrl = response.url
 
     
     def getStatus(self):
-        #Make into switch statment return not just number but reason like OK, changing protocols, etc.
+        #Checks if url request was successful
         if(self.status == 200):
 
             return "(200 O.K) Link is working"
         
         else:
-
+            #Match case for diffrent http status codes
             match self.status:
+
+                case 301:
+                
+                    return (f"(301 Moved Permanently) Redirected to: {self.final_url}")
+                
+                case 302:
+                    
+                    return (f"(302 Found) Temporarily redirected to: {self.final_url}")
+            
+                case 307:
+                    
+                    return (f"(307 Temporary Redirect) to: {self.final_url}")
+                case 308:
+                    
+                    return (f"(308 Permanent Redirect) to: {self.final_url}")
 
                 case 404:
 
@@ -47,30 +63,45 @@ class URL:
 
                     return ("(401 Unauthorized) Link is broken")
                 
+                case 503:
+
+                    return ("(503 Service Unavailable) Link is temporarly broken, try again later")
+                
+                case 500:
+
+                    return ("(500 Internal Server Error) Link is temporarly broken due to server issue, try again later")
+                
                 case _:
-                    return "Link is broken"
-    
-Selector = input("For reading urls from a file enter 1,For enter urls manualy press 2:\n")
+                    
+                    return (f"Link status: {self.status}")
+
+selector = input("For reading urls from a file enter 1,For enter urls manualy press 2:\n")
 
 validInput = False
 
+list_o_URL = []
+#This will loop until user inputs 1 or 2 for the selector
 while not validInput:
 
-    if(Selector == '1'):
+    if(selector == '1'):
 
         validInput = True
-       
-        print("File handling goes here")
+
+        file = input("Please enter the file the contains the URLS\n")
+       #Reads urls from provided file
+        with open(file, 'r') as f:
+
+            for line in f:
+
+                list_o_URL.append(URL(line.strip()))
     
-    elif(Selector == '2'):
+    elif(selector == '2'):
 
         validInput = True
 
         Done = False
 
-        list_o_URL = []
-
-
+        #Loops until user enters done
         while not Done:
 
             url=input("Please enter your urls, If you are finished type 'done' ")
@@ -83,14 +114,12 @@ while not validInput:
 
                 list_o_URL.append(URL(url))
 
-            
-        for url in list_o_URL:
-
-            print(f"URL: {url.urls} Status code: {url.getStatus()}")
 
     else:
 
         Selector = input("Invalid Selection: For reading urls from a file enter 1,For enter urls manualy press 2:\n")
+#prints out urls and their statuses 
+for url in list_o_URL:
 
-
+    print(f"URL: {url.urls} Status code: {url.getStatus()}")
 
