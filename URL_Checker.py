@@ -6,7 +6,7 @@ This program takes either a file or user input of urls. Then using requests and 
 if a link is broken or not.
 '''
 
-
+import os
 import requests
 
 class URL:
@@ -87,13 +87,26 @@ while not validInput:
 
         validInput = True
 
-        file = input("Please enter the file the contains the URLS\n")
-       #Reads urls from provided file
-        with open(file, 'r') as f:
+        fileFound = False
+        #keeps program from continuing until given a file that exists
+        while not fileFound:
 
-            for line in f:
+            file = input("Please enter the file the contains the URLS\n")
+            
+            if os.path.exists(file):
 
-                list_o_URL.append(URL(line.strip()))
+                #Reads urls from provided file
+                with open(file, 'r') as f:
+
+                    for line in f:
+
+                        list_o_URL.append(URL(line.strip()))
+                
+                fileFound = True
+
+            else:
+
+                print(f"{file} does not exist")
     
     elif(selector == '2'):
 
